@@ -1,4 +1,5 @@
 test/
+locale/
 DESIGN.md
 investigate_intl.js
 test_lcs.js
