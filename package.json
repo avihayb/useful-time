@@ -1,7 +1,7 @@
 {
-  "name": "ubuntu-time",
+  "name": "useful-time",
   "version": "0.0.1",
-  "description": "A JavaScript library for formatting dates and times in a human-readable format.",
+  "description": "An opinionated JavaScript library for formatting datetime in an easy to process format.",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -11,8 +11,15 @@
     "date",
     "time",
     "format",
+    "formatting",
+    "easy",
+    "humane",
+    "readable",
     "intl"
   ],
   "author": "Avihay Baratz",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "full-icu": "^1.5.0"
+  }
 }

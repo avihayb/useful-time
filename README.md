@@ -1,14 +1,16 @@
-# Ubuntu Time
+# Useful Time
 
 A JavaScript library for formatting dates and times into a human-readable format.
 
 The emphasis is on simplicity and ease of use. Humans think about datetime in several ways:
 - An absolute value which can be compared
-- A relative value which should have a more precise resolution the closer it is to the current/compared time
+- A relative value from a given point in time (like now)
 - seasonal value (Month names/numbers seem to be apt for this)
 - day of week (scheduling events)
 
 Formatters tend to give you just one of those.
+
+useful-time attempts to provide all of those in a single format.
 
 ## Needs
 
@@ -27,7 +29,7 @@ We can have all that and a ~~bag of chips~~ day of week.
 The library formats dates to follow this pattern:
 `{date}({day of week}) {time}({time until datetime})`
 
-The date is formatted using ISO 8601.
+The date is formatted using ISO 8601, except for the compact format which is uses the absoleate --mm-dd.
 The day of week, time and time until datetime are formatted using the locale's time format.
 
 If the locale time is lexically sortable (e.g. using 24h format), the format will also be lexically sortable. Note that default `en-US` uses 12h format (AM/PM) which is not lexically sortable.
@@ -57,7 +59,7 @@ for example:
 ## Usage
 
 ```javascript
-import { format } from 'ubuntu-time';
+import { format } from 'useful-time';
 
 const date = new Date();
 console.log(format({ to: date }).text);
@@ -70,7 +72,7 @@ console.log(format({ to: date }).text);
 The library supports 4 styles: `compact`, `short` (default), `long`, and `longer`.
 
 ```javascript
-import { format } from 'ubuntu-time';
+import { format } from 'useful-time';
 
 const now = new Date();
 const target = new Date(now.getTime() + 2 * 60 * 60 * 1000); // 2 hours from now
@@ -123,3 +125,63 @@ const past = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000); // 3 days ago
 // Output: ... (-3d)
 console.log(format({ to: past, from: now }).text);
 ```
+
+
+## API
+
+### format(options)
+
+Formats a date to a human-readable format.
+
+#### Parameters
+
+- `options` (required): The options object.
+  - `to` (required): The date to format.
+  - `from` (optional): The date to compare to. Defaults to the current date.
+  - `style` (optional): The style to use. pick from `compact`, `short` (default), `long`, and `longer`.
+  - `locale` (optional): The locale to use. Defaults to `navigator.language`, the system language or `en-US`.
+  - `threshold` (optional): The threshold to use. pick from `1`, `1.5`, `2`, `"one"`, `"two"`, `"once"`, `"twice"`.
+
+#### Returns
+
+An object with the following properties:
+  - `text` (string): The formatted date string.
+  - `inFuture` (boolean): Whether the date is in the future.
+  - `inAYearOrMore` (boolean): Whether the date is in a year or more.
+  - `locale` (string): The locale used for formatting.
+  - `timeZone` (string): The time zone used for formatting.
+  - `toString` (function): A function that returns the formatted date string.
+
+you can send the object directly to `console.log` or `console.error` and it will print the formatted date string.
+  
+### formatToParts(options)
+
+Formats a date to a human-readable format.
+
+#### Parameters
+
+- `options` (required): The options object.
+  - `to` (required): The date to format.
+  - `from` (optional): The date to compare to. Defaults to the current date.
+  - `style` (optional): The style to use. pick from `compact`, `short` (default), `long`, and `longer`.
+  - `locale` (optional): The locale to use. Defaults to `navigator.language`, the system language or `en-US`.
+  - `threshold` (optional): The threshold to use. pick from `1`, `1.5`, `2`, `"one"`, `"two"`, `"once"`, `"twice"`.
+
+#### Returns
+
+An array of objects with the following properties:
+  - `type` (string): The type of the part. should be from: `"literal"` | `"date"` | `"day of week"` | `"time"` | `"relative"`.
+  - `value` (string): The value of the part.
+
+
+
+
+## issues
+
+- the numbers for date and time are not localized.
+- some locales use AM/PM which is not lexically sortable.
+- some locales need override for the relative time format in compact mode. I've filled the ones that didn't exist, but there are probably more existing that need shorter text for compact mode.
+- the tests arn't great, and don't cover a representative set of most used locales.
+- maybe parts should be further subdivided.
+
+

@@ -51,81 +51,81 @@ describe('format', () => {
         assert.ok(parts.find(p => p.type === 'relative'));
     });
 
-    it('should format for en-IL', () => {
+    it('should format for en-IL (compact)', () => {
         const result = format({ to: future, from: now, locale: 'en-IL', style: 'compact' });
-        console.log('en-IL:', result.text, result.timeZone);
-        // en-IL might use 24h time or different day names?
-        // 11-24(Mon) 22:00(1 day) - usually 24h in IL but english day names
+        console.log('en-IL (compact):', result.text, result.timeZone);
+        // Expect: MM-DD(Day) HH:MM(Relative)
+        // en-IL typically uses 24h time, so no AM/PM.
+        // Date format seems to be MM-DD or DD-MM depending on implementation, but let's match the structure.
+        assert.match(result.text, /^\d{2}-\d{2}\([A-Za-z]+\) \d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'en-IL');
     });
 
-    it('should format for en-IL', () => {
+    it('should format for en-IL (short)', () => {
         const result = format({ to: future, from: now, locale: 'en-IL' });
-        console.log('en-IL:', result.text, result.timeZone);
-        // en-IL might use 24h time or different day names?
-        // 11-24(Mon) 22:00(1 day) - usually 24h in IL but english day names
+        console.log('en-IL (short):', result.text, result.timeZone);
+        // Expect: YY-MM-DD(Day) HH:MM(Relative)
+        assert.match(result.text, /^\d{2}-\d{2}-\d{2}\([A-Za-z]+\) \d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'en-IL');
     });
 
-    it('should format for en-IL', () => {
+    it('should format for en-IL (long)', () => {
         const result = format({ to: future, from: now, locale: 'en-IL', style: 'long' });
-        console.log('en-IL:', result.text, result.timeZone);
-        // en-IL might use 24h time or different day names?
-        // 11-24(Mon) 22:00(1 day) - usually 24h in IL but english day names
+        console.log('en-IL (long):', result.text, result.timeZone);
+        // Expect: YYYY-MM-DD(DayName) HH:MM(Relative)
+        assert.match(result.text, /^\d{4}-\d{2}-\d{2}\([A-Za-z]+\) \d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'en-IL');
     });
 
-    it('should format for he-IL', () => {
-        // he-IL: Hebrew language, IL region?    
-        // Hebrew day names, maybe 12h time?
+    it('should format for he-IL (compact)', () => {
         const result = format({ to: future, from: now, locale: 'he-IL', style: 'compact' });
-        console.log('he-IL:', result.text, result.timeZone);
-        // 11-24(יום ב׳) 10:00 PM(מחר) or similar
+        console.log('he-IL (compact):', result.text, result.timeZone);
+        // Expect Hebrew characters in day name and relative time
+        // Structure: MM-DD(Day) HH:MM(Relative)
+        assert.match(result.text, /^\d{2}-\d{2}\([^)]+\)\s\d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'he-IL');
     });
 
-    it('should format for he-IL', () => {
-        // he-IL: Hebrew language, IL region?    
-        // Hebrew day names, maybe 12h time?
+    it('should format for he-IL (short)', () => {
         const result = format({ to: future, from: now, locale: 'he-IL' });
-        console.log('he-IL:', result.text, result.timeZone);
-        // 11-24(יום ב׳) 10:00 PM(מחר) or similar
+        console.log('he-IL (short):', result.text, result.timeZone);
+        // Expect: YY-MM-DD(Day) HH:MM(Relative)
+        assert.match(result.text, /^\d{2}-\d{2}-\d{2}\([^)]+\)\s\d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'he-IL');
     });
 
-    it('should format for he-IL', () => {
-        // he-IL: Hebrew language, IL region?    
-        // Hebrew day names, maybe 12h time?
+    it('should format for he-IL (long)', () => {
         const result = format({ to: future, from: now, locale: 'he-IL', style: 'long' });
-        console.log('he-IL:', result.text, result.timeZone);
-        // 11-24(יום ב׳) 10:00 PM(מחר) or similar
+        console.log('he-IL (long):', result.text, result.timeZone);
+        // Expect: YYYY-MM-DD(DayName) HH:MM(Relative)
+        assert.match(result.text, /^\d{4}-\d{2}-\d{2}\([^)]+\)\s\d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'he-IL');
     });
 
     const future2 = new Date("2026-01-31T14:00:00")
 
-    it('should format for en-IL', () => {
+    it('should format for en-IL (compact) - future2', () => {
         console.log('future2:', future2);
         const result = format({ to: future2, from: now, locale: 'en-IL', style: 'compact' });
-        console.log('en-IL:', result.text, result.timeZone);
-        // en-IL might use 24h time or different day names?
-        // 11-24(Mon) 22:00(1 day) - usually 24h in IL but english day names
+        console.log('en-IL (compact):', result.text, result.timeZone);
+        // Expect: MM-DD(Day) HH:MM(Relative)
+        assert.match(result.text, /^\d{2}-\d{2}\([A-Za-z]+\) \d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'en-IL');
     });
 
-    it('should format for en-IL', () => {
+    it('should format for en-IL (short) - future2', () => {
         const result = format({ to: future2, from: now, locale: 'en-IL' });
-        console.log('en-IL:', result.text, result.timeZone);
-        // en-IL might use 24h time or different day names?
-        // 11-24(Mon) 22:00(1 day) - usually 24h in IL but english day names
+        console.log('en-IL (short):', result.text, result.timeZone);
+        // Expect: YY-MM-DD(Day) HH:MM(Relative)
+        assert.match(result.text, /^\d{2}-\d{2}-\d{2}\([A-Za-z]+\) \d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'en-IL');
     });
 
-    it('should format for en-IL', () => {
+    it('should format for en-IL (long) - future2', () => {
         const result = format({ to: future2, from: now, locale: 'en-IL', style: 'long' });
-        console.log('en-IL:', result.text, result.timeZone);
-        // en-IL might use 24h time or different day names?
-        // 11-24(Mon) 22:00(1 day) - usually 24h in IL but english day names
+        console.log('en-IL (long):', result.text, result.timeZone);
+        // Expect: YYYY-MM-DD(DayName) HH:MM(Relative)
+        assert.match(result.text, /^\d{4}-\d{2}-\d{2}\([A-Za-z]+\) \d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'en-IL');
     });
 
@@ -140,30 +140,25 @@ describe('format', () => {
         assert.strictEqual(result.locale, 'en-GB');
     });
 
-    it('should format for he-IL', () => {
-        // he-IL: Hebrew language, IL region?    
-        // Hebrew day names, maybe 12h time?
+    it('should format for he-IL (compact) - future2', () => {
         const result = format({ to: future2, from: now, locale: 'he-IL', style: 'compact' });
-        console.log('he-IL:', result.text, result.timeZone);
-        // 11-24(יום ב׳) 10:00 PM(מחר) or similar
+        console.log('he-IL (compact):', result.text, result.timeZone);
+        // Expect Hebrew characters
+        assert.match(result.text, /^\d{2}-\d{2}\([^)]+\)\s\d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'he-IL');
     });
 
-    it('should format for he-IL', () => {
-        // he-IL: Hebrew language, IL region?    
-        // Hebrew day names, maybe 12h time?
+    it('should format for he-IL (short) - future2', () => {
         const result = format({ to: future2, from: now, locale: 'he-IL' });
-        console.log('he-IL:', result.text, result.timeZone);
-        // 11-24(יום ב׳) 10:00 PM(מחר) or similar
+        console.log('he-IL (short):', result.text, result.timeZone);
+        assert.match(result.text, /^\d{2}-\d{2}-\d{2}\([^)]+\)\s\d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'he-IL');
     });
 
-    it('should format for he-IL', () => {
-        // he-IL: Hebrew language, IL region?    
-        // Hebrew day names, maybe 12h time?
+    it('should format for he-IL (long) - future2', () => {
         const result = format({ to: future2, from: now, locale: 'he-IL', style: 'long' });
-        console.log('he-IL:', result.text, result.timeZone);
-        // 11-24(יום ב׳) 10:00 PM(מחר) or similar
+        console.log('he-IL (long):', result.text, result.timeZone);
+        assert.match(result.text, /^\d{4}-\d{2}-\d{2}\([^)]+\)\s\d{1,2}:\d{2}\(.*\)$/);
         assert.strictEqual(result.locale, 'he-IL');
     });
 

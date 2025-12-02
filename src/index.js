@@ -1,13 +1,15 @@
+import { overrides } from './overrides.js';
+
 /**
  * Formats a date into a human-readable string.
  * Pattern: {date}({day of week}) {time}({time until datetime})
  * @param {object} options - Options for formatting the date.
  * @param {Date} options.to - The target date to format.
  * @param {Date} [options.from=new Date()] - The reference date for relative formatting.
- * @param {'compact' | 'short' | 'long' | 'longer'} [options.style='short'] - The style to use.
- * @param {1 | 1.5 | 2 | 'one' | 'two' | 'once' | 'twice'} [options.durationThreshold='twice'] - Threshold for switching units.
+ * @param {'compact'|'short'|'long'|'longer'} [options.style='short'] - The style to use.
+ * @param {1|1.5|2|'one'|'two'|'once'|'twice'} [options.durationThreshold='twice'] - Threshold for switching units.
  * @param {string[]|string} [options.locale] - The locale to use. Defaults to navigator.language if available, else 'en-US'.
- * @returns {{text: string, inFuture: boolean, inAYearOrMore: boolean, locale: string, timeZone: string, toString: function()=>string }}
+ * @returns {{text: string, inFuture: boolean, inAYearOrMore: boolean, locale: string, timeZone: string, toString: function()=>string}}
  */
 export function format({ to, from = new Date(), style = 'short', durationThreshold = 'twice', locale } = {}) {
     const _locale = getLocale(locale);
@@ -46,7 +48,6 @@ export function formatToParts({ to, from = new Date(), style = 'short', duration
     // Intl.DateTimeFormat is locale dependent. To force this format, we can format parts manually or use 'en-CA' (YYYY-MM-DD).
     // However, MM-dd is not standard ISO (YYYY-MM-DD).
     // Let's construct it manually to ensure consistency across locales as requested.
-
     const year = targetDate.getFullYear();
     const month = String(targetDate.getMonth() + 1).padStart(2, '0');
     const day = String(targetDate.getDate()).padStart(2, '0');
@@ -285,11 +286,102 @@ function formatRelativeTime(target, now, style, durationThreshold, locale) {
     // Fallback using Intl.RelativeTimeFormat and LCS
     // This extracts the duration part (e.g., "2 months", "חודשיים") from "in 2 months" / "2 months ago"
     const rtf = new Intl.RelativeTimeFormat(locale, { style: durationStyle, numeric: 'always' });
+
+    // Use runtime extraction for compact/narrow style
+    // This ensures we get the correct abbreviations (e.g. "2 י'" for Hebrew days)
+    if (durationStyle === 'narrow') {
+        const template = getCompactUnitTemplate(locale, primaryUnit);
+        if (template) {
+            const numberStr = new Intl.NumberFormat(locale).format(primaryValue);
+            const localizedDuration = template.replace('{number}', numberStr);
+            return (diffMs < 0 ? '-' : '') + localizedDuration;
+        }
+    }
+
+    // Attempt to fix textual representation (e.g. "שבועיים" -> "2 weeks", "tomorrow" -> "1 day")
+    if (rtf.formatToParts && typeof Intl.PluralRules !== 'undefined') {
+        const parts = rtf.formatToParts(primaryValue, primaryUnit);
+        const hasInteger = parts.some(p => p.type === 'integer');
+
+        if (!hasInteger) {
+            const pr = new Intl.PluralRules(locale);
+            const category = pr.select(primaryValue);
+
+            // Try to find a number in the same plural category that produces a numeric representation
+            // Candidates: 1, 0, 2, 3, 4, 5, 6, 10, 20, 21, 100
+            const candidates = [1, 0, 2, 3, 4, 5, 6, 10, 20, 21, 100];
+            let fallbackValue = candidates.find(c => pr.select(c) === category && hasNumericRepresentation(rtf, c, primaryUnit));
+
+            // If no candidate in the same category, fallback to 'other' (usually 10 or 100)
+            if (fallbackValue === undefined) {
+                fallbackValue = candidates.find(c => pr.select(c) === 'other' && hasNumericRepresentation(rtf, c, primaryUnit));
+            }
+
+            // If still undefined (unlikely), try any numeric
+            if (fallbackValue === undefined) {
+                fallbackValue = candidates.find(c => hasNumericRepresentation(rtf, c, primaryUnit));
+            }
+
+            if (fallbackValue !== undefined) {
+                const fallbackParts = rtf.formatToParts(fallbackValue, primaryUnit);
+                const s1 = rtf.format(fallbackValue, primaryUnit);
+                const s2 = rtf.format(-fallbackValue, primaryUnit);
+                const fallbackDuration = getLCS(s1, s2).trim();
+
+                const fallbackIntStr = fallbackParts.find(p => p.type === 'integer').value;
+                const targetIntStr = new Intl.NumberFormat(locale).format(primaryValue);
+
+                // Replace the fallback number with the target number
+                // We use a simple replace, assuming the number appears once or is distinct enough.
+                const localizedDuration = fallbackDuration.replace(fallbackIntStr, targetIntStr);
+                return (diffMs < 0 ? '-' : '') + localizedDuration;
+            }
+        }
+    }
+
     const s1 = rtf.format(primaryValue, primaryUnit);
     const s2 = rtf.format(-primaryValue, primaryUnit);
     const localizedDuration = getLCS(s1, s2).trim();
 
     return (diffMs < 0 ? '-' : '') + localizedDuration;
+}
+
+function hasNumericRepresentation(rtf, value, unit) {
+    const parts = rtf.formatToParts(value, unit);
+    return parts.some(p => p.type === 'integer');
+}
+
+/**
+ * Gets a template for compact unit formatting (e.g. "{number}d").
+ * Tries overrides first, then falls back to extracting from Intl.NumberFormat.
+ */
+function getCompactUnitTemplate(locale, unit) {
+    const language = getLanguage(locale);
+    // 1. Check overrides
+    if (overrides[language] && overrides[language][unit]) {
+        return overrides[language][unit];
+    }
+
+    // 2. Try to extract from Intl.NumberFormat
+    try {
+        const nf = new Intl.NumberFormat(locale, { style: 'unit', unit: unit, unitDisplay: 'narrow' });
+        const formatted = nf.format(1);
+        const parts = nf.formatToParts(1);
+        const integerPart = parts.find(p => p.type === 'integer');
+
+        if (integerPart) {
+            return formatted.replace(integerPart.value, '{number}');
+        }
+    } catch (e) {
+        // Fallback or ignore
+    }
+
+    return null;
+}
+
+function getLanguage(locale) {
+    const LocaleObj = new Intl.Locale(locale);
+    return LocaleObj.language;
 }
 
 function getLCS(s1, s2) {
@@ -313,3 +405,13 @@ function getLCS(s1, s2) {
     return s1.substring(endIndex - maxLen, endIndex);
 
 }
+
+// function loadJsonSync(path) {
+//     try {
+//         const rawData = fs.readFileSync(path, 'utf8'); //
+//         const overrides = JSON.parse(rawData);
+//         console.log(overrides);
+//     } catch (err) {
+//         console.error(`Failed to load JSON file synchronously: {path}\n`, err);
+//     }
+// }

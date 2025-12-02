@@ -1,12 +1,12 @@
-# Design Document - Ubuntu Time
+# Design Document - Usefull Time
 
 ## Philosophy
-The goal of `ubuntu-time` is to provide a datetime format that is simultaneously:
+The goal of `useful-time` is to provide a datetime format that is simultaneously:
 1.  **Absolute**: Comparable and precise.
 2.  **Relative**: providing context on "how far away" the event is.
 3.  **Contextual**: Including day of week and seasonal info (via date).
 
-Most libraries force a choice between absolute and relative, or switch between them based on distance. `ubuntu-time` aims to provide **both** in a single, consistent string.
+Most libraries force a choice between absolute and relative, or switch between them based on distance. `usefull-time` aims to provide **both** in a single, consistent string.
 
 ## Formats
 

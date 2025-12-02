@@ -1,6 +1,6 @@
 test/
 locale/
+scripts/
+node_modules/
 DESIGN.md
-investigate_intl.js
-test_lcs.js
 .gitignore
