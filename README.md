@@ -14,9 +14,9 @@ useful-time attempts to provide all of those in a single format.
 
 ## Needs
 
-Parsing a full datetime format is a bit slow. Computing a time difference is slower still. if you want to schedule events you'd need to look at time from different perspectives.
+Parsing a full datetime format in your mind is a bit slow. Computing a time difference is slower still. if you want to schedule events you'd need to look at time from different perspectives.
 
-Libraries such as moment.js give a a relative time format for short time differences, and absolute format for long time differences. This is a bad user experience for humans in my opinion, as the two formats are not compatible and require reinterpretation of the data for a comparison, as well as knowing the current time to compute the relative time.
+When using libraries, such as moments.js in a calendar mode (think gMail inbox mail dates), give a relative time format for short time differences, and absolute format for long time differences. This is a bad user experience for humans in my opinion, since the two formats are not compatible and require reinterpretation of the data for a comparison, as well as knowing the current time to compute the relative time.
 
 It's easier to schedule events with the absolute format then to go to all that bother.
 
@@ -180,8 +180,9 @@ An array of objects with the following properties:
 
 - the numbers for date and time are not localized.
 - some locales use AM/PM which is not lexically sortable.
-- some locales need override for the relative time format in compact mode. I've filled the ones that didn't exist, but there are probably more existing that need shorter text for compact mode.
+- ~~some locales need override for the relative time format in compact mode. I've filled the ones that didn't exist, but there are probably more existing that need shorter text for compact mode.~~ I've added a strategy for using abbriviated weekdays from small style when compact style fails to deliver the goods (using an abbreviation where two days have the same abbreviation, like T for Tuesday and Thursday in en-US, or not actually using an abbreviation). You can add an override to fix your locale by submitting a pull request.
 - the tests arn't great, and don't cover a representative set of most used locales.
 - maybe parts should be further subdivided.
+- didn't take the time to check how much AI slop I've introduced, though the implementation looks solid at a glancel
 
 
