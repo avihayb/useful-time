@@ -76,38 +76,10 @@ export const customWeekdayAbbreviations = {
  * 7. Yoruba (yo): Used the distinctive consonants from each day
  * 8. Zhuang (za): Extracted the unique endings, dropped the common "singhgiz" prefix
  */
-
-// Verification: Check that all abbreviations are distinct
-function verifyDistinct(locale, abbrevs) {
-    const set = new Set(abbrevs);
-    if (set.size !== 7) {
-        console.error(`❌ ${locale}: Not distinct! ${abbrevs.join(', ')}`);
-        return false;
-    }
-    console.log(`✓ ${locale}: ${abbrevs.join(', ')}`);
-    return true;
-}
-
-console.log('=== VERIFYING CUSTOM ABBREVIATIONS ===\n');
-let allValid = true;
-for (const [locale, abbrevs] of Object.entries(customWeekdayAbbreviations)) {
-    if (!verifyDistinct(locale, abbrevs)) {
-        allValid = false;
-    }
-}
-
-console.log(`\n${allValid ? '✓ All custom abbreviations are distinct!' : '❌ Some abbreviations have duplicates'}`);
-
-// Show length statistics
-console.log('\n=== LENGTH STATISTICS ===\n');
-for (const [locale, abbrevs] of Object.entries(customWeekdayAbbreviations)) {
-    const lengths = abbrevs.map(a => Array.from(a).length);
-    const min = Math.min(...lengths);
-    const max = Math.max(...lengths);
-    const avg = (lengths.reduce((a, b) => a + b, 0) / lengths.length).toFixed(1);
-    console.log(`${locale.padEnd(8)} min:${min} max:${max} avg:${avg}`);
-}
 /**
  * Custom weekday abbreviations for locales where truncation doesn't work.
  * Array format: [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
+ * 
+ * To verify these abbreviations are distinct, run:
+ * node scripts/verify_custom_weekday_abbrevs.js
  */
