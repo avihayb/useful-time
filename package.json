@@ -4,6 +4,7 @@
   "description": "An opinionated JavaScript library for formatting datetime in an easy to process format.",
   "main": "src/index.js",
   "type": "module",
+  "exports": "./src/index.js",
   "scripts": {
     "test": "node --test"
   },

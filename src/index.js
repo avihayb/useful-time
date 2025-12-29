@@ -470,3 +470,10 @@ function getLCS(s1, s2) {
 //         console.error(`Failed to load JSON file synchronously: {path}\n`, err);
 //     }
 // }
+
+// Default export and named aliases for convenient access
+const useful_time = { format, formatToParts };
+const ut = useful_time;
+
+export default useful_time;
+export { useful_time, ut };

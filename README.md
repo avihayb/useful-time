@@ -59,10 +59,17 @@ for example:
 ## Usage
 
 ```javascript
+// Option 1: Named imports (traditional)
 import { format } from 'useful-time';
+console.log(format({ to: new Date() }).text);
 
-const date = new Date();
-console.log(format({ to: date }).text);
+// Option 2: Default import
+import useful_time from 'useful-time';
+console.log(useful_time.format({ to: new Date() }).text);
+
+// Option 3: Use the 'ut' alias (recommended for conciseness)
+import { ut } from 'useful-time';
+console.log(ut.format({ to: new Date() }).text);
 ```
 
 ## Examples
@@ -72,26 +79,26 @@ console.log(format({ to: date }).text);
 The library supports 4 styles: `compact`, `short` (default), `long`, and `longer`.
 
 ```javascript
-import { format } from 'useful-time';
+import { ut } from 'useful-time';
 
 const now = new Date();
 const target = new Date(now.getTime() + 2 * 60 * 60 * 1000); // 2 hours from now
 
 // Compact
 // Output: 11-27(Wed) 3:45 PM(+2h)
-console.log(format({ to: target, style: 'compact' }).text);
+console.log(ut.format({ to: target, style: 'compact' }).text);
 
 // Short (Default)
 // Output: 25-11-27(Wed) 3:45 PM(+2h)
-console.log(format({ to: target, style: 'short' }).text);
+console.log(ut.format({ to: target, style: 'short' }).text);
 
 // Long
 // Output: 2025-11-27(Wednesday) 3:45 PM(in 2 hours)
-console.log(format({ to: target, style: 'long' }).text);
+console.log(ut.format({ to: target, style: 'long' }).text);
 
 // Longer
 // Output: 2025-11-27(Wednesday) 3:45 PM(in 2 hours)
-console.log(format({ to: target, style: 'longer' }).text);
+console.log(ut.format({ to: target, style: 'longer' }).text);
 ```
 
 ### Locales
@@ -103,15 +110,15 @@ const target = new Date();
 
 // Arabic
 // Output: 11-27(الأربعاء) 15:45(+0 س)
-console.log(format({ to: target, locale: 'ar-EG' }).text);
+console.log(ut.format({ to: target, locale: 'ar-EG' }).text);
 
 // French
 // Output: 11-27(mer.) 15:45(+0 h)
-console.log(format({ to: target, locale: 'fr-FR' }).text);
+console.log(ut.format({ to: target, locale: 'fr-FR' }).text);
 
 // Hebrew
 // Output: 11-27(ד׳) 15:45(+0ש׳)
-console.log(format({ to: target, locale: 'he-IL' }).text);
+console.log(ut.format({ to: target, locale: 'he-IL' }).text);
 ```
 
 ### Relative Time
@@ -123,7 +130,7 @@ const now = new Date();
 const past = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000); // 3 days ago
 
 // Output: ... (-3d)
-console.log(format({ to: past, from: now }).text);
+console.log(ut.format({ to: past, from: now }).text);
 ```
 
 
