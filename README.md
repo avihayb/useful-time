@@ -210,6 +210,7 @@ An array of objects with the following properties:
 - ~~some locales need override for the relative time format in compact mode. I've filled the ones that didn't exist, but there are probably more existing that need shorter text for compact mode.~~ I've added a strategy for using abbriviated weekdays from small style when compact style fails to deliver the goods (using an abbreviation where two days have the same abbreviation, like T for Tuesday and Thursday in en-US, or not actually using an abbreviation). You can add an override to fix your locale by submitting a pull request.
 - the tests arn't great, and don't cover a representative set of most used locales.
 - maybe parts should be further subdivided.
-- didn't take the time to check how much AI slop I've introduced, though the implementation looks solid at a glancel
-
+- didn't take the time to check how much AI slop I've introduced, though the implementation looks solid at a glance
+- optimise the formatting by imitating the underlying Intl.DateTimeFormat and friends. enabling storing the underlying formatter, and reusing it for the same locale and style.
+- looking for other optimizations
 
